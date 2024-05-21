@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } catch (e) {
             return console.error('Error getting identificationTypes: ', e);
         }
-    };
+    }
 
     function createSelectOptions(elem, options, labelsAndKeys =
         {label: "name", value: "id"}) {
