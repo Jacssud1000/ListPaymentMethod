@@ -55,7 +55,15 @@ public class PaymentListService {
 
       Payment payment = clients.create(paymentCreateRequest, requestOptions);
 
-      return new ResponsePaymentDto(payment.getId(), payment.getStatus(), payment.getStatusDetail());
+      String external_resource_url = payment.getTransactionDetails().getExternalResourceUrl();
+
+      return new ResponsePaymentDto(
+          payment.getId(),
+          payment.getStatus(),
+          payment.getStatusDetail(),
+          external_resource_url
+      );
+
 
     } catch (MPException | MPApiException e) {
       throw new RuntimeException(e);

@@ -12,6 +12,58 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    async function submit(e) {
+        e.preventDefault();
+        const first_name = document.getElementById("form-checkout__payerFirstName").value;
+        const last_name = document.getElementById("form-checkout__payerLastName").value;
+        const email = document.getElementById("form-checkout__email").value;
+        const type = document.getElementById("form-checkout__identificationType").value;
+        const number = document.getElementById("form-checkout__identificationNumber").value;
+
+        const producto = {
+            transaction_amount: 100,
+            description: "Titulo do produto",
+            payment_method_id: "bolbradesco",
+            payerDto: {
+                email: email,
+                first_name,
+                last_name,
+                identification: {
+                    type,
+                    number
+                }
+            }
+        }
+
+        try {
+            const response = await fetch("http://localhost:8080/process_payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(producto)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la solicitud de pago');
+            }
+
+            const paymentData = await response.json();
+            console.log(paymentData);
+
+            if (paymentData.external_resource_url) {
+                const externalResourceUrl = paymentData.external_resource_url;
+                document.getElementById('boleto-link').href = externalResourceUrl;
+                document.getElementById('payment-result').style.display = 'block';
+            } else {
+                console.error('external_resource_url no encontrado en la respuesta');
+            }
+
+        } catch (error) {
+            console.error('Error al realizar el pago:', error);
+        }
+    }
+
     function createSelectOptions(elem, options, labelsAndKeys =
         {label: "name", value: "id"}) {
         const {label, value} = labelsAndKeys;
@@ -35,4 +87,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     getIdentificationTypes();
+
+    const button = document.getElementById("btPayment");
+
+    button.addEventListener("click", submit);
 });
