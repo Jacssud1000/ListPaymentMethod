@@ -11,6 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 @Service
 public class ListPaymentMethodService {
   private static final String API_URL = "https://api.mercadopago.com/v1/payment_methods";
@@ -27,13 +37,13 @@ public class ListPaymentMethodService {
 
     ResponseEntity<String> response = restTemplate.exchange(API_URL, HttpMethod.GET, entity, String.class);
 
-    JSONArray resultArray = getJsonArray(response);
+    JSONArray resultArray = getJsonArray(response.getBody());
 
     return ResponseEntity.status(HttpStatus.OK).body(resultArray.toString());
   }
 
-  private static JSONArray getJsonArray(ResponseEntity<String> response) throws JSONException {
-    JSONArray jsonArray = new JSONArray(response.getBody());
+  private static JSONArray getJsonArray(String responseBody) throws JSONException {
+    JSONArray jsonArray = new JSONArray(responseBody);
     JSONArray resultArray = new JSONArray();
     for (int i = 0; i < jsonArray.length(); i++) {
       JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -46,8 +56,3 @@ public class ListPaymentMethodService {
     return resultArray;
   }
 }
-
-
-
-
-

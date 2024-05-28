@@ -10,8 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.json.JSONException;
+
 @RestController
-@CrossOrigin("http://localhost:63342")
+@CrossOrigin("http://localhost:63342/")
 @RequestMapping()
 public class PaymentListController {
 
@@ -19,8 +27,11 @@ public class PaymentListController {
   private ListPaymentMethodService listPaymentMethodService;
 
   @GetMapping("/v1/payment_methods")
-  ResponseEntity<String> getListPaymentMethod() throws JSONException {
-    String payment = String.valueOf(listPaymentMethodService.getPaymentMethods());
-    return ResponseEntity.status(HttpStatus.OK).body(payment);
+  public ResponseEntity<String> getListPaymentMethod() {
+    try {
+      return listPaymentMethodService.getPaymentMethods();
+    } catch (JSONException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing JSON response");
+    }
   }
 }
